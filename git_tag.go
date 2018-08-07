@@ -55,3 +55,15 @@ func GetLatestTag() (string, error) {
 	latest := len(versions)
 	return versions[latest-1].String(), nil
 }
+
+func GetNewVersion() (string, error) {
+	tag, err := GetLatestTag()
+	if err != nil && tag == "" {
+		return "", err
+	}
+
+	v, _ := NewVersion(tag)
+	v.build += 1
+	new_tag := v.String()
+	return new_tag, nil
+}
