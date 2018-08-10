@@ -14,8 +14,15 @@ func GetLatestTag() (string, error) {
 		return "", errors.New("Error found git")
 	}
 
-	cmd := exec.Command("git", "fetch", "--tag", "--prune", "-v", "origin",
-		"+refs/tag/*:+refs/tag/*")
+	old_tags, _ := exec.Command("git", "tag", "-l").Output()
+
+	old_tags_str := strings.TrimSuffix(string(old_tags), "\n")
+
+	for _, old_tag := range strings.Split(old_tags_str, "\n") {
+		exec.Command("git", "tag", "-d", old_tag).Run()
+	}
+
+	cmd := exec.Command("git", "fetch", "--tag", "-v")
 
 	for _, env := range os.Environ() {
 		cmd.Env = append(cmd.Env, env)
